@@ -1,0 +1,61 @@
+*, *::after, *::before {
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+
+  -webkit-user-drag: none;
+}
+
+html {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  font-size: calc(100vw / 1920 * 18);
+
+  @media only screen and (max-width: $bp__phone) {
+    font-size: calc(100vw / 750 * 24);
+  }
+
+  // @media only screen and (max-width: $bp__tablet) {
+  //   font-size: calc(100vw / 1024);
+  // }
+}
+
+body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+
+  background-color: $color-primary;
+
+  color: $color-text;
+
+  overflow: hidden;
+  overscroll-behavior-y: none;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+}
+
+[data-animation="lines"] {
+  span {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  > span {
+    overflow: hidden;
+  }
+}

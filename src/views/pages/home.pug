@@ -1,0 +1,21 @@
+extends ../index.pug
+
+block variables
+  - var template = 'home'
+
+block content
+  .home
+    .home__wrapper
+      section.home__gallery
+        each media in home.data.gallery
+          a.home__gallery__link(href=`/stories/${media.story.uid}`)
+            figure.home__gallery__media
+              img.home__gallery__media__image(alt=media.photo.alt src=media.photo.url crossorigin="anonymous")
+
+            .home__gallery__media__details
+              span.home__gallery__media__year(data-animation="letters")=media.year
+              span.home__gallery__media__title=media.title
+
+    .home__gallery__indicator__wrapper
+      svg(viewBox="0 0 100 100")
+        circle.home__gallery__indicator(cx="50" cy="50" r="45")

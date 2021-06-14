@@ -1,0 +1,24 @@
+.preloader {
+  @extend %cover;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: $color-primary;
+
+  z-index: 10;
+}
+
+.preloader__title {
+  font-size: 14vw;
+}
+
+.preloader__number {
+  position: absolute;
+  bottom: 4rem;
+  left: 50%;
+  transform: translateX(-50%);
+
+  font-size: 1.2rem;
+}

@@ -1,0 +1,59 @@
+%link {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 1px;
+
+    background-color: currentColor;
+
+    transition: transform 0.7s $ease-out-expo;
+  }
+}
+
+%link__line--visible {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+%link__line--hidden {
+  transform: scaleX(0);
+  transform-origin: right center;
+}
+
+%link--visible {
+  @extend %link;
+
+  display: inline-block;
+
+  &:before {
+    @extend %link__line--visible;
+  }
+
+  &:hover {
+    &:before {
+      @extend %link__line--hidden;
+    }
+  }
+}
+
+%link--hidden {
+  @extend %link;
+
+  display: inline-block;
+
+  &:before {
+    @extend %link__line--hidden;
+  }
+
+  &:hover {
+    &:before {
+      @extend %link__line--visible;
+    }
+  }
+}

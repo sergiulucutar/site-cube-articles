@@ -1,0 +1,54 @@
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+
+  padding: 2rem;
+  padding-bottom: 0;
+
+  z-index: 9;
+
+  pointer-events: none;
+
+  @media only screen and (max-width: $bp__phone) {
+    padding: 1rem;
+  }
+}
+
+.navigation__wrapper {
+  display: flex;
+  justify-content: space-between;
+
+  width: 100%;
+}
+
+.navigation__logo {
+  font-family: $font-title;
+  text-transform: uppercase;
+
+  pointer-events: all;
+}
+
+
+.navigation__link {
+  @extend %link--hidden;
+}
+
+.navigation__list {
+  position: relative;
+}
+
+.navigation__list__item {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  overflow: hidden;
+  pointer-events: all;
+}
+
+.navigation__list__link {
+  @extend %link--hidden;
+}

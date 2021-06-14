@@ -1,0 +1,9 @@
+.home {
+  @extend %page;
+  height: 100%;
+
+  overflow: hidden;
+}
+.home__wrapper {
+  height: 100%;
+}
