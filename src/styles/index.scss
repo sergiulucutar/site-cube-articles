@@ -1,7 +1,9 @@
 @import './base/reset.scss';
 
-@import './abstracts/variables.scss';
+@import url('/node_modules/font-awesome/css/font-awesome.css');
+
 @import './abstracts/responsive.scss';
+@import './abstracts/variables.scss';
 @import './abstracts/mixins.scss';
 @import './abstracts/link.scss';
 
@@ -14,8 +16,6 @@
 @import './components/canvas.scss';
 @import './components/preloader.scss';
 @import './components/navigation.scss';
-@import './components/smooth-scroll.scss';
 
 @import './pages/home.scss';
-@import './pages/about.scss';
-@import './pages/story.scss';
+@import './pages/article.scss';

@@ -6,16 +6,29 @@ block variables
 block content
   .home
     .home__wrapper
-      section.home__gallery
-        each media in home.data.gallery
-          a.home__gallery__link(href=`/stories/${media.story.uid}`)
-            figure.home__gallery__media
-              img.home__gallery__media__image(alt=media.photo.alt src=media.photo.url crossorigin="anonymous")
-
-            .home__gallery__media__details
-              span.home__gallery__media__year(data-animation="letters")=media.year
-              span.home__gallery__media__title=media.title
-
-    .home__gallery__indicator__wrapper
-      svg(viewBox="0 0 100 100")
-        circle.home__gallery__indicator(cx="50" cy="50" r="45")
+      section.home__articles
+        header.home__articles__header
+          h2.home__articles__title=home.data.cases_label
+          .home__articles__filter
+            ul
+              each filter in home.data.filter
+                li.home__articles__option=filter.option
+        span.home__articles_scroll →
+        each article in articles
+          a.home__article__link(href=`/articles/${article.uid}`)
+            article.home__article(data-palette=article.data.palette)(data-articleuid=article.uid)
+              .home__article__details
+                span.home__article__type
+                  i.fa.fa-paw
+                  span Animals
+                .home__article__media
+                  span.home__article__media__likes
+                    i.fa.fa-heart
+                    span=article.data.likes
+                  span.home__article__media__shares
+                    i.fa.fa-share-alt
+                    span=article.data.shares
+                h3.home__article__title=article.data.title
+              .home__article__image
+                figure
+                  img(src=article.data.image.url)

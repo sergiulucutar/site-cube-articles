@@ -1,9 +1,11 @@
 import gsap from 'gsap'
 import { Plane, Transform } from 'ogl'
 
+import DeviceDetector from '@app/classes/device-detector'
 import State from '@app/state'
 
 import Media from './media'
+import Transition from './transition'
 
 export default class Home {
   constructor ({ gl, scene, viewport }) {
@@ -11,13 +13,18 @@ export default class Home {
     this.scene = scene
     this.viewport = viewport
 
+    this.transition = new Transition({
+      gl: this.gl,
+      parent: this.scene,
+      viewport: this.viewport
+    })
+
     this.group = new Transform()
     this.group.setParent(scene)
 
-    this.galleryElement = document.querySelector('.home__gallery')
-    this.galleryIndicator = document.querySelector('.home__gallery__indicator')
-    this.mediaLinkElements = [...this.galleryElement.querySelectorAll('.home__gallery__link')]
-    this.mediaElements = [...this.galleryElement.querySelectorAll('.home__gallery__media__image')]
+    this.element = document.querySelector('.home__articles')
+    // this.galleryIndicator = document.querySelector('.home__gallery__indicator')
+    this.articleElements = [...this.element.querySelectorAll('.home__article')]
 
     this.createGeometry()
     this.createGallery()
@@ -29,37 +36,42 @@ export default class Home {
       lerp: 0.1,
       isMovingRight: true
     }
-
-    // Hide untill shown, to avoid flicker
-    this.group.position.y = this.viewport.height
   }
 
   createGeometry () {
-    this.geometry = new Plane(this.gl)
+    this.geometry = new Plane(this.gl, {
+      widthSegments: 40,
+      heightSegments: 20
+    })
   }
 
   createGallery () {
-    this.medias = this.mediaElements.map((media, index) => {
-      const imageUrl = media.getAttribute('src')
+    this.medias = this.articleElements.map((article, index) => {
+      // const imageUrl = media.getAttribute('src')
 
       return new Media({
-        element: media,
-        linkElement: this.mediaLinkElements[index],
+        element: article,
         geometry: this.geometry,
         index,
         scene: this.group,
         viewport: this.viewport,
         gl: this.gl,
-        textureImage: State.data.images[imageUrl]
+        image: State.data.images[article.querySelector('img').getAttribute('src')]
       })
     })
   }
 
   createGalleryBounds () {
     this.gallery = {
-      width: this.galleryElement.getBoundingClientRect().width
-      // canvasWidth: this.galleryElement.getBoundingClientRect().width / window.innerWidth * this.viewport.width
+      width: this.element.getBoundingClientRect().width,
+      height: this.element.getBoundingClientRect().height
     }
+
+    this.gallery.height += this.gallery.height * 0.05
+  }
+
+  getArticleByUID (mediaUID) {
+    return this.medias.find(media => media.element.getAttribute('data-articleuid') === mediaUID)
   }
 
   update () {
@@ -68,71 +80,49 @@ export default class Home {
     } else {
       this.x.current = gsap.utils.interpolate(this.x.current, this.x.target, this.x.lerp)
     }
-    this.galleryElement.style.transform = `translateX(${this.x.current}px)`
-    this.galleryIndicator.style.transform = `rotate(${this.x.current / this.gallery.width * 360}deg)`
 
-    // this.isMovingRight = this.x.target > this.x.current
-
-    this.medias.forEach(media => {
-      // Infinite gallery
-      // const scaleX = media.mesh.scale.x / 2 * 1.5 // * 1.5 to have on offset before moving the item at the end of the gallery
-
-      // if (this.isMovingRight) {
-      //   if (media.mesh.position.x - scaleX > this.viewport.width / 2) {
-      //     media.extra -= this.gallery.canvasWidth
-      //   }
-      // } else {
-      //   if (media.mesh.position.x + scaleX < -this.viewport.width / 2) {
-      //     media.extra += this.galleryWidth.canvasWidth
-      //   }
-      // }
-
-      media.update(this.x.current)
-    })
-  }
-
-  updateX (x) {
-    this.x.target = this.x.current + x.distance
-    const extra = this.medias[0].bounds.width / 2
-    this.x.target = gsap.utils.clamp(-this.gallery.width + window.innerWidth * 0.5 + extra, window.innerWidth * 0.5 - extra, this.x.target)
-  }
-
-  hide () {
-    return new Promise(resolve => {
-      const timeline = gsap.timeline({
-        onComplete: resolve
+    if (DeviceDetector.isPhone()) {
+      this.element.style.transform = `translateY(${this.x.current}px)`
+      this.medias.forEach(media => {
+        media.update(0, -this.x.current)
       })
+    } else {
+      this.element.style.transform = `translateX(${this.x.current}px)`
+      this.medias.forEach(media => {
+        media.update(this.x.current)
+      })
+    }
+  }
 
-      timeline
-        .to(this.group.position, {
-          y: -this.viewport.height,
-          duration: 1,
-          ease: 'expo.in'
-        })
-        .to(this.group.scale, {
-          x: 0.8,
-          y: 0.8,
-          duration: 1,
-          ease: 'expo.in'
-        }, 0)
-    })
+  updateX (distance) {
+    if (DeviceDetector.isPhone()) {
+      this.x.target = this.x.current + distance
+      this.x.target = gsap.utils.clamp(-this.gallery.height + window.innerHeight, 0, this.x.target)
+    } else {
+      this.x.target = this.x.current + distance
+      this.x.target = gsap.utils.clamp(-this.gallery.width + window.innerWidth, 0, this.x.target)
+    }
+  }
+
+  hide (url) {
+    const urlBits = url.split('/')
+    const articleUID = urlBits[urlBits.length - 1]
+    window.sessionStorage.setItem('visitedArticle', articleUID)
+    const selectedArticle = this.getArticleByUID(articleUID)
+
+    return this.transition.out(selectedArticle)
   }
 
   show () {
-    const timeline = gsap.timeline()
+    const articleUID = window.sessionStorage.getItem('visitedArticle')
+    const article = this.getArticleByUID(articleUID)
+    if (article) {
+      // Scroll so the object is in the camera view
+      this.updateX(-article.bounds.left + window.innerWidth / 2 - article.bounds.width / 2)
 
-    timeline
-      .to(this.group.position, {
-        y: 0,
-        duration: 1,
-        ease: 'expo.out'
-      })
-      .from(this.group.scale, {
-        x: 1.2,
-        y: 1.2,
-        duration: 1,
-        ease: 'expo.out'
-      }, 0)
+      // Calculate the position of the element as it's on screen (substract scrolled distanced from element bound)
+      return this.transition.in(article, (-this.viewport.width / 2) + (article.mesh.scale.x / 2) + ((article.bounds.left + this.x.target) / window.innerWidth) * this.viewport.width)
+    }
   }
 
   /**
@@ -149,11 +139,11 @@ export default class Home {
   }
 
   onTouchMove (x) {
-    this.updateX(x)
+    this.updateX(x.distance)
   }
 
   onMouseWheel (x) {
-    this.updateX(x)
+    this.updateX(x.distance)
   }
 
   /**
@@ -162,5 +152,6 @@ export default class Home {
 
   destroy () {
     this.scene.removeChild(this.group)
+    this.scene.removeChild(this.transition.mesh)
   }
 }

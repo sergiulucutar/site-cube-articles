@@ -36,13 +36,13 @@ html(data-device=device lang="en")
 
     link(rel="stylesheet", href="main.css")
 
-  body
+  body.preloading
     include ./components/preloader
     include ./components/navigation
 
+    #canvas
+
     .content#content(data-template=template)
       block content
-
-    #canvas
 
     script(src="main.js")

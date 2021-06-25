@@ -1,6 +1,7 @@
 import normalizeWheel from 'normalize-wheel'
 
 import Home from './pages/home'
+import Article from './pages/article'
 
 import Canvas from './components/canvas'
 import Navigation from './components/navigation'
@@ -10,9 +11,12 @@ class App {
   constructor () {
     this.preloader = new Preloader()
     this.update()
+    this.createCanvas()
 
     this.preloader.once(PRELOADER_EVENTS.completed, () => {
       this.createApp()
+
+      this.canvas.onChange(this.template)
       this.onPreloaded()
     })
   }
@@ -21,7 +25,6 @@ class App {
     this.createContent()
     this.createPages()
     this.createNavigation()
-    this.createCanvas()
 
     this.addEventListeners()
     this.addLinkListeners()
@@ -29,7 +32,6 @@ class App {
 
   createCanvas () {
     this.canvas = new Canvas()
-    this.canvas.onChange(this.template)
   }
 
   createContent () {
@@ -38,14 +40,13 @@ class App {
   }
 
   createNavigation () {
-    this.navigation = new Navigation({
-      template: this.template
-    })
+    this.navigation = new Navigation()
   }
 
   createPages () {
     this.pages = {
-      home: new Home()
+      home: new Home(),
+      article: new Article()
     }
 
     this.page = this.pages[this.template]
@@ -63,9 +64,9 @@ class App {
       if (this.canvas) {
         this.canvas.update()
 
-        if (this.page.scroll) {
-          this.canvas.updateScrollOffset(this.page.scroll.getOffset())
-        }
+        // if (this.page.scroll) {
+        //   this.canvas.updateScrollOffset(this.page.scroll.getOffset())
+        // }
       }
     }
 
@@ -88,7 +89,7 @@ class App {
   }
 
   addLinkListeners () {
-    const domLinks = document.querySelectorAll('a')
+    const domLinks = document.querySelectorAll('a:not(.navigation__list__link--external)')
     for (const domLink of domLinks) {
       domLink.onclick = (event) => {
         event.preventDefault()
@@ -124,7 +125,7 @@ class App {
     }
 
     this.isChangeInProgress = true
-    await Promise.all([this.canvas.hide(), this.page.hide()])
+    await Promise.all([this.canvas.hide(url), this.page.hide()])
 
     const request = await window.fetch(url)
 
@@ -139,13 +140,16 @@ class App {
       this.content.setAttribute('data-template', this.template)
       this.content.innerHTML = divContent.innerHTML
 
+      // Reset app BG tat is changed by article template
+      document.body.style.backgroundColor = 'transparent'
+      document.body.setAttribute('data-palette', '')
+
       this.canvas.onChange(this.template)
-      this.navigation.onChange(this.template)
 
       this.page = this.pages[this.template]
       this.page.create()
 
-      this.canvas.show()
+      await this.canvas.show()
       this.page.show()
 
       this.addLinkListeners()
@@ -158,10 +162,19 @@ class App {
   async onPreloaded () {
     this.page.onResize()
 
-    await this.preloader.hide()
+    // Remove preloading class
+    document.body.classList = ''
+
+    await Promise.all([
+      this.canvas.preloader.hide(),
+      this.preloader.hide()
+    ])
+    this.navigation.show()
+
+    this.canvas.preloader.destroy()
     this.preloader.destroy()
 
-    this.canvas.show()
+    // this.canvas.show()
     this.page.show()
   }
 

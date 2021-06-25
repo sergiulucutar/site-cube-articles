@@ -16,9 +16,10 @@ html {
   overflow: hidden;
 
   font-size: calc(100vw / 1920 * 18);
+  font-size: 1vmax;
 
   @media only screen and (max-width: $bp__phone) {
-    font-size: calc(100vw / 750 * 24);
+    font-size: calc(100vw / 750 * 18);
   }
 
   // @media only screen and (max-width: $bp__tablet) {
@@ -37,25 +38,35 @@ body {
 
   overflow: hidden;
   overscroll-behavior-y: none;
+
+  &[data-palette="Caribbean Green Flipped"],
+  &[data-palette="Wattle Flipped"],
+  &[data-palette="Orange Flipped"] {
+    .navigation__logo, .navigation__menu__button {
+      background-color: $color-primary;
+      color: $color-secondary;
+    }
+
+    .navigation__list {
+      &:first-of-type a {
+        color: $color-primary;
+      }
+    }
+  }
+
+  &.preloading {
+    background-color: $color-secondary;
+  }
 }
 
 a {
-  color: white;
+  color: $color-text;
   text-decoration: none;
+
+  transition: color 0.4s $ease-out-expo;
 }
 
 .content {
   width: 100%;
   height: 100%;
-}
-
-[data-animation="lines"] {
-  span {
-    display: inline-block;
-    vertical-align: top;
-  }
-
-  > span {
-    overflow: hidden;
-  }
 }

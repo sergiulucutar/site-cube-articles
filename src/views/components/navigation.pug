@@ -1,10 +1,30 @@
 nav.navigation
   .navigation__wrapper
-    a.navigation__logo.navigation__link(href="/") Album
+    a(href="/")
+      button.navigation__logo.navigation__list__button(href="/")
+        i.fa.fa-cube
 
     ul.navigation__list
       li.navigation__list__item
-        a.navigation__list__link(href="/") Gallery
+        a.navigation__list__link(href="") Discover
 
       li.navigation__list__item
-        a.navigation__list__link(href="/about") About
+        a.navigation__list__link(href="") About
+
+      li.navigation__list__item
+        a.navigation__list__link.navigation__list__link--external(href="https://dribbble.com/shots/15770486-UI-Concept-3") Dribble
+
+    ul.navigation__list
+      li.navigation__list__item
+        a.navigation__list__link(href="") My Zone
+
+      li.navigation__list__item
+        a.navigation__list__link(href="") Notifications
+
+      button.navigation__list__item.navigation__list__button.navigation__list__button--notification
+        i.fa.fa-money
+
+      button.navigation__list__item.navigation__list__button
+        i.fa.fa-search
+    button.navigation__list__button.navigation__menu__button
+      span

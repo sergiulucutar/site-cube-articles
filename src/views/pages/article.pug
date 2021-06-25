@@ -1,0 +1,49 @@
+extends ../index.pug
+
+block variables
+  - var template = 'article'
+
+block content
+  .article(data-palette=content.data.palette)
+    .article__wrapper
+      section.article__intro
+        header.article__intro__header
+          h1.article__intro__title=content.data.title
+          .article__intro__header__details
+            span=`${texts.data.author_label} ${content.data.author}`
+            span=`${texts.data.views_label} ${content.data.views}`
+        .article__intro__body
+          .article__intro__body__wrapper
+            .article__intro__body__details
+              .article__media
+                span.article__media__likes
+                  i.fa.fa-heart
+                  span=content.data.likes
+                span.article__media__shares
+                  i.fa.fa-share-alt
+                  span=content.data.shares
+              span.article__type
+                i.fa.fa-paw
+                span Animals
+            p.article__intro__body__text=content.data.description
+          figure.article__intro__figure
+            img.article__intro__image(src=content.data.image.url)
+      section.article__problem
+        .article__problem__description
+          p=(content.data.body[0].primary.text)
+        .article__problem__details
+          span.article__problem__type Animals
+          ul
+            li Wildlife
+            li Ocean
+            li Fish
+            li Domestic
+            li Water
+            li Climat
+      section.article__solution
+        .article__solution__labels
+          span.article__solution__label--left=(texts.data.problem_label)
+            i →
+          span.article__solution__label--right=(texts.data.solution_label)
+            i →
+        p.article__solution__description=(content.data.body[1].primary.text)

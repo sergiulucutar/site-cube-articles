@@ -1,4 +1,4 @@
-# Cub Articles (custom website)
+# Cube Articles (custom website)
 
 A publication's website.
 The purpose was to create a website without using any frameworks.

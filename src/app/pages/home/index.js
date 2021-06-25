@@ -5,9 +5,7 @@ export default class Home extends Page {
     super({
       id: 'home',
 
-      domElement: '.home',
-      domChildren: {
-      }
+      domElement: '.home'
     })
   }
 }

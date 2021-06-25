@@ -33,7 +33,17 @@ app.set('views', path.join(__dirname, 'src/views'))
 app.set('view engine', 'pug')
 
 const getDataForPreloading = async api => {
+  const { results } = await api.query(
+    Prismic.Predicates.at('document.type', 'article'),
+    {
+      fetch: ['article.image']
+    }
+  )
+
   const textures = []
+  for (const article of results) {
+    textures.push(article.data.image.url)
+  }
 
   return {
     textures
@@ -49,9 +59,25 @@ app.get('/preloade', async (req, res) => {
 
 app.get('/', async (req, res) => {
   const api = await initApi(req)
-  const home = await api.getSingle('home')
+  const home = await api.getSingle('home_page')
+  const { results } = await api.query(
+    Prismic.Predicates.at('document.type', 'article'),
+    {
+      fetch: ['article.uid', 'article.title', 'article.likes', 'article.shares', 'article.palette', 'article.image']
+    }
+  )
 
-  res.render('pages/home', { home })
+  res.render('pages/home', { home, articles: results })
+})
+
+app.get('/articles/:uid', async (req, res) => {
+  const api = await initApi(req)
+  const texts = await api.getSingle('article_page')
+  const content = await api.getByUID(
+    'article', req.params.uid
+  )
+
+  res.render('pages/article', { texts, content })
 })
 
 app.listen(port, () => {

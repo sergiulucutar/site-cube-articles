@@ -1,12 +1,11 @@
 import { Camera, Renderer, Transform } from 'ogl'
+import DeviceDetector from '../../classes/device-detector'
 
 import Home from './home'
-import Story from './story'
+import { Preloader } from './preloader'
 
 const TEMPLATES = {
-  home: 'home',
-  story: 'story',
-  about: 'about'
+  home: 'home'
 }
 
 export default class Canvas {
@@ -26,6 +25,8 @@ export default class Canvas {
     this.createCamera()
     this.createScene()
     this.onResize()
+
+    this.createPreloader()
   }
 
   createCamera () {
@@ -39,6 +40,7 @@ export default class Canvas {
       antialias: true
     })
 
+    this.renderer.sort = true
     this.gl = this.renderer.gl
 
     document.getElementById('canvas').appendChild(this.gl.canvas)
@@ -48,9 +50,17 @@ export default class Canvas {
     this.scene = new Transform()
   }
 
-  hide () {
-    if (this.template && this.template.show) {
-      return this.template.hide()
+  createPreloader () {
+    this.preloader = new Preloader({
+      gl: this.gl,
+      parent: this.scene,
+      viewport: this.viewport
+    })
+  }
+
+  hide (url) {
+    if (this.template && this.template.hide) {
+      return this.template.hide(url)
     }
   }
 
@@ -99,13 +109,6 @@ export default class Canvas {
           viewport: this.viewport
         })
         break
-      case TEMPLATES.story:
-        this.template = new Story({
-          gl: this.gl,
-          scene: this.scene,
-          viewport: this.viewport
-        })
-        break
     }
   }
 
@@ -134,21 +137,30 @@ export default class Canvas {
 
   onMouseWheel (event) {
     if (this.template && this.template.onMouseWheel) {
-      this.x.distance = event.pixelY * 4
+      this.x.distance = -event.pixelY * 4
       this.template.onMouseWheel(this.x)
     }
   }
 
   onTouchDown (event) {
     this.isTouchDown = true
-    this.x.start = event.touches ? event.touches[0].clientX : event.clientX
+    if (DeviceDetector.isPhone()) {
+      this.x.start = event.touches ? event.touches[0].clientY : event.clientY
+    } else {
+      this.x.start = event.touches ? event.touches[0].clientX : event.clientX
+    }
   }
 
   onTouchMove (event) {
     if (!this.isTouchDown) {
       return
     }
-    this.x.end = event.touches ? event.touches[0].clientX : event.clientX
+
+    if (DeviceDetector.isPhone()) {
+      this.x.end = event.touches ? event.touches[0].clientY : event.clientY
+    } else {
+      this.x.end = event.touches ? event.touches[0].clientX : event.clientX
+    }
     this.x.distance = this.x.end - this.x.start
 
     if (this.template && this.template.onTouchMove) {

@@ -107,6 +107,10 @@ export default class Page {
     })
   }
 
+  /**
+   * Event Listeners
+   */
+
   onMouseWheel (event) {
     if (this.scroll) {
       this.scroll.onMouseWheel(event)

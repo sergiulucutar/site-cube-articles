@@ -3,8 +3,11 @@
  */
 export class State {
   constructor () {
-    this.data = {
-    }
+    this.data = {}
+  }
+
+  addImages (images) {
+    this.data.images = images
   }
 }
 

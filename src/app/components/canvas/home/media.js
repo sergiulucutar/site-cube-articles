@@ -1,24 +1,23 @@
-import gsap from 'gsap'
 import { Mesh, Program, Texture } from 'ogl'
 
 import vertexShader from '@app/shaders/media/vertex.glsl'
 import fragmentShader from '@app/shaders/media/fragment.glsl'
+import { ColorsManager } from '@app/classes/colors'
 
 export default class Media {
-  constructor ({ element, linkElement, geometry, index, gl, scene, viewport, textureImage }) {
+  constructor ({ element, geometry, index, gl, scene, viewport, image }) {
     this.gl = gl
     this.scene = scene
     this.viewport = viewport
 
     this.element = element
-    this.linkElement = linkElement
     this.geometry = geometry
     this.index = index
 
     this.extra = 0
     this.texture = new Texture(this.gl, {
       generateMipmaps: false,
-      image: textureImage
+      image
     })
 
     this.createBounds()
@@ -29,28 +28,25 @@ export default class Media {
   }
 
   createProgram () {
-    const canvasAspect = this.bounds.width / this.bounds.height
-    const imageAspect = this.texture.image.width / this.texture.image.height
-
-    let scaleY = 1
-    let scaleX = imageAspect / canvasAspect
-    if (scaleX < 1) {
-      scaleY = 1 / scaleX
-      scaleX = 1
-    }
-
     this.program = new Program(this.gl, {
       vertex: vertexShader,
       fragment: fragmentShader,
+      transparent: true,
       uniforms: {
-        uOffset: {
-          value: 0
+        uColor: {
+          value: ColorsManager.getNormalizedRGB(this.element.getAttribute('data-palette'))
         },
         uTexture: {
           value: this.texture
         },
         uTextureScale: {
-          value: [scaleX, scaleY]
+          value: [this.imageBounds.width, this.imageBounds.height]
+        },
+        uTransition: {
+          value: 0
+        },
+        uTransitionCurveOffset: {
+          value: 0
         }
       }
     })
@@ -63,7 +59,6 @@ export default class Media {
     })
 
     this.mesh.position.x = this.index * this.mesh.scale.x
-
     this.mesh.setParent(this.scene)
   }
 
@@ -76,6 +71,21 @@ export default class Media {
       width: this.element.offsetWidth,
       height: this.element.offsetHeight
     }
+
+    const imageAspect = this.texture.image.width / this.texture.image.height
+    const canvasAspect = this.bounds.width / 2 / this.bounds.height
+
+    let scaleY = 1
+    let scaleX = imageAspect / canvasAspect
+    if (scaleX < 1) {
+      scaleY = 1 / scaleX
+      scaleX = 1
+    }
+
+    this.imageBounds = {
+      width: scaleX,
+      height: scaleY
+    }
   }
 
   updateScale () {
@@ -83,42 +93,13 @@ export default class Media {
     this.mesh.scale.y = this.viewport.height * (this.bounds.height / window.innerHeight)
   }
 
-  updatePosition () {
-    this.mesh.position.x = (-this.viewport.width / 2) + (this.mesh.scale.x / 2) + (this.bounds.left / window.innerWidth) * this.viewport.width
-    this.mesh.position.y = (this.viewport.height / 2) - (this.mesh.scale.y / 2) - (this.bounds.top / window.innerHeight) * this.viewport.height
+  updatePosition (x = 0, y = 0) {
+    this.mesh.position.x = (-this.viewport.width / 2) + (this.mesh.scale.x / 2) + ((this.bounds.left + x) / window.innerWidth) * this.viewport.width
+    this.mesh.position.y = (this.viewport.height / 2) - (this.mesh.scale.y / 2) - ((this.bounds.top - y) / window.innerHeight) * this.viewport.height
   }
 
-  updatePositionX (x = 0) {
-    this.mesh.position.x = (-this.viewport.width / 2) + (this.mesh.scale.x / 2) + ((this.bounds.left + x) / window.innerWidth) * this.viewport.width + this.extra
-  }
-
-  updatePositionY () {
-    const bounderies = Math.max(this.viewport.width, 7)
-    this.mesh.position.y = Math.cos(this.mesh.position.x / bounderies * Math.PI) * 0.618 - 0.2
-  }
-
-  updateRotation () {
-    const bounderies = Math.max(this.viewport.width, 5)
-    this.mesh.rotation.z = gsap.utils.mapRange(-bounderies / 2, bounderies / 2, Math.PI, -Math.PI, this.mesh.position.x) * 0.08
-  }
-
-  updateTextureOffset () {
-    this.mesh.program.uniforms.uOffset.value = gsap.utils.mapRange(-this.viewport.width / 2, this.viewport.width / 2, -1, 1, this.mesh.position.x)
-  }
-
-  updateElement () {
-    const bounderies = Math.max(this.viewport.width, 7)
-    this.linkElement.style.transform = `
-    translateY(${(-this.mesh.position.y) * (window.innerHeight / this.viewport.height)}px)
-    rotateZ(${gsap.utils.mapRange(-bounderies / 2, bounderies / 2, 180, -180, this.mesh.position.x) * -0.1}deg)`
-  }
-
-  update (x) {
-    this.updatePositionX(x)
-    this.updatePositionY()
-    this.updateRotation()
-    this.updateTextureOffset()
-    this.updateElement()
+  update (x, y) {
+    this.updatePosition(x, y)
   }
 
   onResize (viewport) {
@@ -128,7 +109,5 @@ export default class Media {
     this.createBounds()
     this.updateScale()
     this.updatePosition()
-    this.updateElement()
-    // this.updatePositionX()
   }
 }

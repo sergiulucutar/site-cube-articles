@@ -5,12 +5,14 @@
 
   width: 100%;
 
-  padding: 2rem;
+  padding: 2rem 4rem;
   padding-bottom: 0;
 
   z-index: 9;
 
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
 
   @media only screen and (max-width: $bp__phone) {
     padding: 1rem;
@@ -19,36 +21,121 @@
 
 .navigation__wrapper {
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
 
   width: 100%;
 }
 
 .navigation__logo {
-  font-family: $font-title;
-  text-transform: uppercase;
+  width: 2.5rem;
+  height: 2.5rem;
+
+  background-color: $color-secondary;
+
+  color: $color-primary;
+  font-size: 1.25rem;
 
   pointer-events: all;
+
+  @media only screen and (max-width: $bp__phone) {
+    width: 4rem !important;
+    height: 4rem !important;
+    margin: 1rem;
+  }
 }
 
-
-.navigation__link {
-  @extend %link--hidden;
-}
 
 .navigation__list {
-  position: relative;
+  display: inline-flex;
+
+  &:first-of-type {
+    margin-left: 2rem;
+  }
+
+  &:last-of-type {
+    margin-left: auto;
+  }
+
+  @media only screen and (max-width: $bp__phone) {
+    display: none;
+  }
 }
 
 .navigation__list__item {
-  position: absolute;
-  top: 0;
-  right: 0;
+  font-size: 1.25rem;
 
   overflow: hidden;
   pointer-events: all;
+
+  &:not(:first-child) {
+    margin-left: 1rem;
+  }
+}
+
+.navigation__list__button {
+  width: 2.5rem;
+  height: 2.5rem;
+
+  border-radius: 50%;
+  border: none;
+
+  background-color: $color-secondary;
+  color: $color-primary;
+
+  transform: translateY(-.5rem);
+  transition: all 0.4s $ease-out-expo;
+
+  &:hover {
+    background-color: $color-accent-1;
+    color: $color-secondary;
+  }
 }
 
 .navigation__list__link {
   @extend %link--hidden;
+}
+
+.navigation__menu__button {
+  display: none;
+
+  @media only screen and (max-width: $bp__phone) {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    width: 4rem;
+    height: 4rem;
+
+    display: block;
+    margin: 2rem;
+
+    background-color: $color-secondary;
+  }
+
+  span {
+    position: relative;
+    display: block;
+    width: 80%;
+    height: 100%;
+
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      left: 10%;
+
+      width: 100%;
+
+      height: 2px;
+
+      background-color: currentColor;
+    }
+
+    &::before {
+      top: calc(50% - 2px);
+    }
+
+    &::after {
+      top: calc(50% + 2px);
+    }
+  }
 }

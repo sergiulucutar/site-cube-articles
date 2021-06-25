@@ -5,20 +5,16 @@
   align-items: center;
   justify-content: center;
 
-  background-color: $color-primary;
+  color: $color-primary;
 
-  z-index: 10;
+  z-index: 20;
 }
 
-.preloader__title {
-  font-size: 14vw;
-}
+// .preloader__title {
+//   @extend %font-xx-large;
+//   color: currentColor;
+// }
 
 .preloader__number {
-  position: absolute;
-  bottom: 4rem;
-  left: 50%;
-  transform: translateX(-50%);
-
-  font-size: 1.2rem;
+  @extend %font-xx-large;
 }
