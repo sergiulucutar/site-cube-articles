@@ -1,6 +1,7 @@
-# SL Boilerplate
+# Cub Articles (custom website)
 
-A base for developing websites
+A publication's website.
+The purpose was to create a website without using any frameworks.
 
 ## Getting Started
 
@@ -32,14 +33,7 @@ npm run fe:development
 npm run fe:build
 ```
 
-## Resources & Tools
-
-* [Favicon Generator](https://realfavicongenerator.net/)
-* [Font Convertor](https://transfonter.org/)
-* [Sass Guidelines](https://sass-guidelin.es/#architecture)
-
-
 ## Acknowledgments
 
-* Course: [Building an immersive creative website from scratch without frameworks](https://www.awwwards.com/academy/course/building-an-immersive-creative-website-from-scratch-without-frameworks)
-* [Image scaling in shaders](https://stackoverflow.com/questions/52507592/how-to-scale-a-texture-in-webgl)
+* [Dribble Design](https://dribbble.com/shots/15770486-UI-Concept-3)
+* Images from [Unsplashed](https://unsplash.com/)
